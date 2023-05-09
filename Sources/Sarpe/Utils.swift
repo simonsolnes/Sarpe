@@ -11,6 +11,7 @@ func satisfy(_ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Ch
         }
     }
 }
+
 // Takewhile: https://swiftinit.org/reference/swift/substring
 
 func char(_ character: Character) -> Parser<Substring, Character> {
@@ -18,7 +19,6 @@ func char(_ character: Character) -> Parser<Substring, Character> {
 }
 
 let digit = satisfy { "0" ... "9" ~= $0 }
-
 
 func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequence> where T.Element: Equatable {
     return Parser {
@@ -51,9 +51,25 @@ func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequenc
     }
 }
 
+public func takeWhile(max: Int?, _ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Substring> {
+    return Parser {
+        var count = 0
+        for index in $0.indices {
+            print(index)
+        }
+        return Parse<Substring, Substring>.halt("")
+    }
+}
+
+extension Parser<Substring, Character> {
+    // TODO: make generic
+    static func from(_ charRanges: ClosedRange<Character>...) -> Parser<Substring, Character> {
+        either(charRanges.map { range in satisfy { char in range ~= char }})
+    }
+}
+
 func lazyParser<I, O>(_ fun: @escaping () -> Parser<I, O>) -> Parser<I, O> {
     Parser { input in
         fun().parse(input)
     }
 }
-func takeWhile() {}

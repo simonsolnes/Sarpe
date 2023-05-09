@@ -1,4 +1,4 @@
-enum Parse<Input, Output> {
+public enum Parse<Input, Output> {
     case success(Output, Input)
     case retreat(String)
     case halt(String)
@@ -21,7 +21,7 @@ enum Parse<Input, Output> {
 }
 
 extension Parse: Equatable where Input: Equatable, Output: Equatable {
-    static func == (lhs: Parse<Input, Output>, rhs: Parse<Input, Output>) -> Bool
+    public static func == (lhs: Parse<Input, Output>, rhs: Parse<Input, Output>) -> Bool
         where Input: Equatable, Output: Equatable
     {
         switch lhs {

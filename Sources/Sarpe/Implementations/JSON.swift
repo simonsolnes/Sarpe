@@ -1,4 +1,4 @@
-enum JSON: Equatable {
+public enum JSON: Equatable {
     case int(Int)
     case uint(UInt)
     case double(Double)
@@ -8,35 +8,35 @@ enum JSON: Equatable {
     case object([String: JSON])
     case array([JSON])
 
-    static func parse(_ input: Substring) -> Parse<Substring, JSON> {
+    public static func parse(_ input: Substring) -> Parse<Substring, JSON> {
         either(jsonObject, jsonArray).parse(input)
     }
 
-    static func parse(_ input: String) -> Parse<Substring, JSON> {
+    public static func parse(_ input: String) -> Parse<Substring, JSON> {
         either(jsonObject, jsonArray).parse(input.suffix(from: input.startIndex))
     }
 }
 
-private func jsonValue() -> Parser<Substring, JSON> {
+func jsonValue() -> Parser<Substring, JSON> {
     either(jsonString, jsonNumber, jsonBool, jsonNull, jsonArray, jsonObject)
         .preceded(by: jsonWhitespace)
         .terminated(by: jsonWhitespace)
 }
 
-private let jsonNull = literal("null")
+let jsonNull = literal("null")
     .abstain()
     .to(JSON.null)
 
-private let jsonBool = either(literal("true"), literal("false"))
+let jsonBool = either(literal("true"), literal("false"))
     .abstain()
     .mapOption { Bool(String($0)) }
     .map { JSON.bool(Bool(String($0))!) }
 
-private let jsonWhitespace = satisfy { " \n\r\t".contains($0) }
+let jsonWhitespace = satisfy { " \n\r\t".contains($0) }
     .repeat()
     .map { String($0) }
 
-private let jsonArray =
+let jsonArray =
     lazyParser {
         either(
             jsonWhitespace
@@ -65,7 +65,7 @@ let keyValuePair = char(":")
             .terminated(by: jsonWhitespace),
         after: jsonValue()
     )
-private let jsonObject = lazyParser {
+let jsonObject = lazyParser {
     either(
         jsonWhitespace
             .between(char("{"), char("}"))
@@ -94,7 +94,7 @@ private let jsonObject = lazyParser {
     .map { JSON.object($0) }
 }
 
-private let jsonString = {
+let jsonString = {
     let quote = char(#"""#)
     let backslash = char(#"\"#)
 
@@ -144,7 +144,7 @@ private let jsonString = {
     .map { JSON.string($0) }
 }()
 
-private let jsonNumber = serial(
+let jsonNumber = serial(
     literal("-")
         .optional()
         .map { $0 ?? "" },
