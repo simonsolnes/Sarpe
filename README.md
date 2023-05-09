@@ -3,7 +3,7 @@
 
 Haskell-like parser combinators in a Schwifty manner
 
-**Toy project: Don't use in production**
+**Toy project**  
 If you are looking for something more production-ready, I would reccomend: [davedufresne/SwiftParsec](https://github.com/davedufresne/SwiftParsec)
 
 Most the theory is from Scott Wlaschin's work on parser combinators with F#. I really reccomend his talk ["Understanding parser combinators: a deep dive"](https://www.youtube.com/watch?v=RDalzi7mhdY). It was my first intro to combinators and what peaked my interest.
@@ -17,7 +17,7 @@ Parsers combinators are parsers that be semantically combined with other parsers
 
 Parser combinators are also monads, which mean we can bind them to a function that returns a parser, and apply it to the result.
 
-- Map: `parseDigits.map { Int($0) }
+- Map: `parseDigits.map { Int($0) }`
 - Optional: `parser.optional()` 
 - Application: `parser1.apply(parser2)`
 
@@ -31,13 +31,13 @@ Combinators are very modular, so one can implement the parts and combine it to a
 
 ## Features
 
-- *Swifty*: Focus on creating parsers with Swift's expressiveness rather having a big API surface
-- *No operator overloading*: a lot of monadic parser libraries use `<&>`, '>>=`, `<|>` etc. to combine parsers. I prefer words.
-- *Few primitives*: Makes it easy to optimize
-- *Generic*: Not limited to strings
-- *Value oriented*: Parsers are values, and they are immutable.
-- *Backtrack prevention*:
-- *Buffer limit aware*:
+- **Swifty**: Focus on creating parsers with Swift's expressiveness rather having a big API surface
+- **No operator overloading**: a lot of monadic parser libraries use `<&>`, '>>=`, `<|>` etc. to combine parsers. I prefer words.
+- **Few primitives**: Makes it easy to optimize
+- **Generic**: Not limited to strings
+- **Value oriented**: Parsers are values, and they are immutable.
+- **Backtrack prevention**:
+- **Buffer limit aware**:
 
 
 ## Examples
@@ -59,7 +59,7 @@ assert(parser.parse("cat") == .success(.cat, ""))
 
 ### `Bind` example
 
-```
+```swift
 enum Number: Equatable {
     case signed(Int)
     case unsigned(UInt)
