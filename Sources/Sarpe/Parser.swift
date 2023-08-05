@@ -59,20 +59,20 @@ public struct Parser<I, O>: CustomStringConvertible {
         Parser<I, R> { input in
             switch self.parse(input) {
             case let .success(res, sur):
-                return function(res).parse(sur)
+                function(res).parse(sur)
             case let .limit(res, sur) where res != nil && withLimit:
                 switch function(res!).parse(sur) {
                 case let .success(res2, sur2):
-                    return .limit(res2, sur2)
+                    .limit(res2, sur2)
                 case let other:
-                    return other
+                    other
                 }
             case .limit:
-                return .limit(nil, input)
+                .limit(nil, input)
             case let .retreat(reason):
-                return .retreat(reason)
+                .retreat(reason)
             case let .halt(reason):
-                return .halt(reason)
+                .halt(reason)
             }
         }
     }
@@ -81,15 +81,15 @@ public struct Parser<I, O>: CustomStringConvertible {
         Parser<I, O?> {
             switch self.parse($0) {
             case let .success(res, sur):
-                return .success(.some(res), sur)
+                .success(.some(res), sur)
             case .retreat:
-                return .success(nil, $0)
+                .success(nil, $0)
             case let .limit(res, sur) where res != nil:
-                return .limit(res, sur)
+                .limit(res, sur)
             case .limit:
-                return .success(nil, $0)
+                .success(nil, $0)
             case let .halt(reason):
-                return .halt(reason)
+                .halt(reason)
             }
         }
     }
@@ -166,9 +166,9 @@ extension Parser {
         Parser {
             switch self.parse($0) {
             case let .retreat(retreatReason):
-                return .halt(reason ?? retreatReason)
+                .halt(reason ?? retreatReason)
             case let other:
-                return other
+                other
             }
         }
     }
@@ -178,20 +178,21 @@ extension Parser {
         Parser {
             switch self.parse($0) {
             case let .limit(res, _) where res != nil:
-                return .limit(nil, $0)
+                .limit(nil, $0)
             case let other:
-                return other
+                other
             }
         }
     }
 
+    /// Turn a limit with a non-`nil` value to success
     func saturate() -> Parser<I, O> {
         Parser {
             switch self.parse($0) {
             case let .limit(res, sur) where res != nil:
-                return .success(res!, sur)
+                .success(res!, sur)
             case let other:
-                return other
+                other
             }
         }
     }

@@ -1,13 +1,13 @@
 func satisfy(_ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Character> {
-    return Parser { input in
+    Parser { input in
         if input.count != 0 {
             if predicate(input[input.startIndex]) {
-                return .success(input[input.startIndex], input[input.index(input.startIndex, offsetBy: 1)...])
+                .success(input[input.startIndex], input[input.index(input.startIndex, offsetBy: 1)...])
             } else {
-                return .retreat("Char: '\(input[input.startIndex])' did not match predicate")
+                .retreat("Char: '\(input[input.startIndex])' did not match predicate")
             }
         } else {
-            return Parse<Substring, Character>.limit(nil, input)
+            Parse<Substring, Character>.limit(nil, input)
         }
     }
 }
@@ -21,7 +21,7 @@ func char(_ character: Character) -> Parser<Substring, Character> {
 let digit = satisfy { "0" ... "9" ~= $0 }
 
 func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequence> where T.Element: Equatable {
-    return Parser {
+    Parser {
         let input = $0
         if input.count == 0 {
             return .limit(nil, input)
@@ -52,7 +52,7 @@ func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequenc
 }
 
 public func takeWhile(max: Int?, _ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Substring> {
-    return Parser {
+    Parser {
         var count = 0
         for index in $0.indices {
             print(index)

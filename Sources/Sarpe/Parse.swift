@@ -5,17 +5,17 @@ public enum Parse<Input, Output> {
     case limit(Output?, Input)
     func isRetreat() -> Bool {
         if case .retreat = self {
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
     func isHalt() -> Bool {
         if case .halt = self {
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 }
@@ -28,30 +28,30 @@ extension Parse: Equatable where Input: Equatable, Output: Equatable {
         case let .success(resLhs, surLhs):
             switch rhs {
             case let .success(resRhs, surRhs):
-                return resLhs == resRhs && surLhs == surRhs
+                resLhs == resRhs && surLhs == surRhs
             default:
-                return false
+                false
             }
         case let .retreat(reasonLhs):
             switch rhs {
             case let .retreat(reasonRhs):
-                return reasonLhs == reasonRhs
+                reasonLhs == reasonRhs
             default:
-                return false
+                false
             }
         case let .halt(reasonLhs):
             switch rhs {
             case let .halt(reasonRhs):
-                return reasonLhs == reasonRhs
+                reasonLhs == reasonRhs
             default:
-                return false
+                false
             }
         case let .limit(resLhs, surLhs):
             switch rhs {
             case let .limit(resRhs, surRhs):
-                return (resLhs == resRhs) && (surLhs == surRhs)
+                (resLhs == resRhs) && (surLhs == surRhs)
             default:
-                return false
+                false
             }
         }
     }

@@ -3,29 +3,29 @@ func curry<A, B, R>(_ function: @escaping (A, B) -> R) -> (A) -> (B) -> R {
 }
 
 private func either<I, O>(_ parser1: Parser<I, O>, _ parser2: Parser<I, O>) -> Parser<I, O> {
-    return Parser<I, O> {
+    Parser<I, O> {
         switch parser1.parse($0) {
         case let .success(res, sur):
-            return .success(res, sur)
+            .success(res, sur)
         case .retreat:
-            return parser2.parse($0)
+            parser2.parse($0)
         case let .halt(reason):
-            return .halt(reason)
+            .halt(reason)
         case let .limit(res, sur):
             switch parser2.parse($0) {
             case let .success(res2, sur2):
-                return .success(res2, sur2)
+                .success(res2, sur2)
             case .retreat:
-                return .limit(res, sur)
+                .limit(res, sur)
             case let .halt(reason):
-                return .halt(reason)
+                .halt(reason)
             case let .limit(res2, sur2):
                 if let res {
-                    return .limit(res, sur)
+                    .limit(res, sur)
                 } else if let res2 {
-                    return .limit(res2, sur2)
+                    .limit(res2, sur2)
                 } else {
-                    return .limit(nil, $0)
+                    .limit(nil, $0)
                 }
             }
         }
@@ -58,11 +58,11 @@ func serial<I, O1, O2>(_ parser1: Parser<I, O1>, _ parser2: Parser<I, O2>) -> Pa
 
 func sequence<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, [O]> {
     if let first = parsers.first {
-        return lift { (first: O, rest: [O]) in
+        lift { (first: O, rest: [O]) in
             [first] + rest
         }(first, sequence(Array(parsers.dropFirst())))
     } else {
-        return Parser<I, [O]>(value: [])
+        Parser<I, [O]>(value: [])
     }
 }
 
