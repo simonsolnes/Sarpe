@@ -1,4 +1,4 @@
-func satisfy(_ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Character> {
+public func satisfy(_ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Character> {
     Parser { input in
         if input.count != 0 {
             if predicate(input[input.startIndex]) {
@@ -14,13 +14,13 @@ func satisfy(_ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Ch
 
 // Takewhile: https://swiftinit.org/reference/swift/substring
 
-func char(_ character: Character) -> Parser<Substring, Character> {
+public func char(_ character: Character) -> Parser<Substring, Character> {
     satisfy { $0 == character }
 }
 
-let digit = satisfy { "0" ... "9" ~= $0 }
+public let digit = satisfy { "0" ... "9" ~= $0 }
 
-func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequence> where T.Element: Equatable {
+public func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequence> where T.Element: Equatable {
     Parser {
         let input = $0
         if input.count == 0 {
@@ -51,6 +51,17 @@ func literal<T: Collection>(_ expected: T) -> Parser<T.SubSequence, T.SubSequenc
     }
 }
 
+public func eof<T: Collection>() -> Parser<T, T> {
+    Parser {
+        if $0.count == 0 {
+            .success($0, $0)
+        } else {
+            .retreat("not end")
+        }
+    }
+}
+
+/*
 public func takeWhile(max: Int?, _ predicate: @escaping (Character) -> Bool) -> Parser<Substring, Substring> {
     Parser {
         var count = 0
@@ -60,6 +71,7 @@ public func takeWhile(max: Int?, _ predicate: @escaping (Character) -> Bool) -> 
         return Parse<Substring, Substring>.halt("")
     }
 }
+*/
 
 extension Parser<Substring, Character> {
     // TODO: make generic

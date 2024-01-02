@@ -1,4 +1,4 @@
-func curry<A, B, R>(_ function: @escaping (A, B) -> R) -> (A) -> (B) -> R {
+public func curry<A, B, R>(_ function: @escaping (A, B) -> R) -> (A) -> (B) -> R {
     { paramA in { paramB in function(paramA, paramB) } }
 }
 
@@ -32,23 +32,26 @@ private func either<I, O>(_ parser1: Parser<I, O>, _ parser2: Parser<I, O>) -> P
     }
 }
 
-func either<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, O> {
+public func either<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, O> {
     parsers.reduce(Parser.thatRetreats(label: "None of the parsers matched"), either)
 }
 
-func either<I, O>(_ parsers: Parser<I, O>...) -> Parser<I, O> {
+public func either<I, O>(_ parsers: Parser<I, O>...) -> Parser<I, O> {
     either(parsers)
 }
 
-func lift<I, A, B, R>(_ function: @escaping (A, B) -> R) -> (Parser<I, A>, Parser<I, B>) -> Parser<I, R> {
+public func lift<I, A, B, R>(_ function: @escaping (A, B) -> R) -> (Parser<I, A>, Parser<I, B>) -> Parser<I, R> {
     { parserA, parserB in
         Parser(value: curry(function))
             .apply(value: parserA)
             .apply(value: parserB)
     }
 }
+public func serial<I, O>(_ parser: Parser<I, O>) -> Parser<I, (O)> {
+    parser.map { result in (result) }
+}
 
-func serial<I, O1, O2>(_ parser1: Parser<I, O1>, _ parser2: Parser<I, O2>) -> Parser<I, (O1, O2)> {
+public func serial<I, O1, O2>(_ parser1: Parser<I, O1>, _ parser2: Parser<I, O2>) -> Parser<I, (O1, O2)> {
     parser1.bind { result1 in
         parser2.bind(withLimit: true) { result2 in
             Parser(value: (result1, result2))
@@ -56,7 +59,7 @@ func serial<I, O1, O2>(_ parser1: Parser<I, O1>, _ parser2: Parser<I, O2>) -> Pa
     }
 }
 
-func sequence<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, [O]> {
+public func sequence<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, [O]> {
     if let first = parsers.first {
         lift { (first: O, rest: [O]) in
             [first] + rest
@@ -66,11 +69,11 @@ func sequence<I, O>(_ parsers: [Parser<I, O>]) -> Parser<I, [O]> {
     }
 }
 
-func sequence<I, O>(_ parsers: Parser<I, O>...) -> Parser<I, [O]> {
+public func sequence<I, O>(_ parsers: Parser<I, O>...) -> Parser<I, [O]> {
     sequence(parsers)
 }
 
-func serial<I, O1, O2, O3>(
+public func serial<I, O1, O2, O3>(
     _ parser1: Parser<I, O1>,
     _ parser2: Parser<I, O2>,
     _ parser3: Parser<I, O3>
@@ -78,7 +81,7 @@ func serial<I, O1, O2, O3>(
     serial(serial(parser1, parser2), parser3).map { ($0.0, $0.1, $1) }
 }
 
-func serial<I, O1, O2, O3, O4>(
+public func serial<I, O1, O2, O3, O4>(
     _ parser1: Parser<I, O1>,
     _ parser2: Parser<I, O2>,
     _ parser3: Parser<I, O3>,

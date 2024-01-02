@@ -23,21 +23,21 @@ public struct Parser<I, O>: CustomStringConvertible {
         }
     }
 
-    func label(_ description: String) -> Parser<I, O> {
+    public func label(_ description: String) -> Parser<I, O> {
         Parser(self.parseFunc, label: description)
     }
 
-    func apply<V, R>(value: Parser<I, V>) -> Parser<I, R> where O == (V) -> R {
+    public func apply<V, R>(value: Parser<I, V>) -> Parser<I, R> where O == (V) -> R {
         self.bind { fun in value.map(fun) }
     }
 
-    func map<R>(withLimit: Bool = true, _ function: @escaping (O) -> R) -> Parser<I, R> {
+    public func map<R>(withLimit: Bool = true, _ function: @escaping (O) -> R) -> Parser<I, R> {
         self.bind(withLimit: withLimit) { input in
             Parser<I, R>(value: function(input))
         }
     }
 
-    func mapOption<R>(withLimit: Bool = true, _ function: @escaping (O) -> R?) -> Parser<I, R> {
+    public func mapOption<R>(withLimit: Bool = true, _ function: @escaping (O) -> R?) -> Parser<I, R> {
         self.bind(withLimit: withLimit) { input in
             if let val = function(input) {
                 return Parser<I, R>(value: val)
@@ -47,15 +47,15 @@ public struct Parser<I, O>: CustomStringConvertible {
         }
     }
 
-    func map<R>(on dict: [O: R]) -> Parser<I, R> {
+    public func map<R>(on dict: [O: R]) -> Parser<I, R> {
         self.mapOption { dict[$0] }
     }
 
-    func to<R>(_ value: R) -> Parser<I, R> {
+    public func to<R>(_ value: R) -> Parser<I, R> {
         self.map { _ in value }
     }
 
-    func bind<R>(withLimit: Bool = true, _ function: @escaping (O) -> Parser<I, R>) -> Parser<I, R> {
+    public func bind<R>(withLimit: Bool = true, _ function: @escaping (O) -> Parser<I, R>) -> Parser<I, R> {
         Parser<I, R> { input in
             switch self.parse(input) {
             case let .success(res, sur):
@@ -77,7 +77,7 @@ public struct Parser<I, O>: CustomStringConvertible {
         }
     }
 
-    func optional() -> Parser<I, O?> {
+    public func optional() -> Parser<I, O?> {
         Parser<I, O?> {
             switch self.parse($0) {
             case let .success(res, sur):
@@ -96,7 +96,7 @@ public struct Parser<I, O>: CustomStringConvertible {
 }
 
 /// # Repetition
-extension Parser {
+public extension Parser {
     func `repeat`(_ exactRepeats: Int) -> Parser<I, [O]> {
         sequence(Array(repeating: self, count: exactRepeats))
     }
@@ -160,7 +160,7 @@ extension Parser {
 }
 
 /// # Control Flow
-extension Parser {
+public extension Parser {
     /// Halt a parser that retreats
     func halts(_ reason: String? = nil) -> Parser<I, O> {
         Parser {
@@ -196,10 +196,23 @@ extension Parser {
             }
         }
     }
+    /// Fails if there are remaining
+    func complete() -> Parser<I, O> {
+        Parser {
+        switch self.parse($0) {
+            case .limit: 
+                .halt("extra left")
+            case .success:
+                .halt("extra left")
+            case let other:
+                other
+            }
+        }
+    }
 }
 
 /// # Presidence
-extension Parser {
+public extension Parser {
     func preceded<W>(by president: Parser<I, W>) -> Parser<I, O> {
         serial(president, self).map { $0.1 }
     }
