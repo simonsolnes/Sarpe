@@ -3,7 +3,7 @@ public enum Parse<Input, Output> {
     case retreat(String)
     case halt(String)
     case limit(Output?, Input)
-    func isRetreat() -> Bool {
+    public func isRetreat() -> Bool {
         if case .retreat = self {
             true
         } else {
@@ -11,11 +11,21 @@ public enum Parse<Input, Output> {
         }
     }
 
-    func isHalt() -> Bool {
+    public func isHalt() -> Bool {
         if case .halt = self {
             true
         } else {
             false
+        }
+    }
+    public func toOption() -> Output? {
+        switch self {
+        case let .success(res, _):
+             res
+        case let .limit(res, _):
+             res
+        default:
+             nil
         }
     }
 }
