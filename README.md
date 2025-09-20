@@ -109,3 +109,4 @@ let jsonArray = either(
     .map { JSON.array($0) }
 )
 ```
+test
